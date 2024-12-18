@@ -27,15 +27,15 @@ int valid_number(char num[], int cur_sys, int size) {
     return 1;
 }
 
-// OtherToDecimal
+// OtherToDecimal: not finshed yet
 void OtherToDecimal(char num[], int new_sys, int size) {
     int res = 0;
     for (int i = size - 1; i > -1; i--) {
-        int digit = 0;
+        int digit;
         if (num[i] > '9') {
-            digit = num[i] - 55;
-        } else {
             digit = num[i] - '0';
+        } else {
+            digit = (num[i] - 'A') + 10;
         }
         res = res * new_sys + digit; // Corrected to use new_sys
     }
