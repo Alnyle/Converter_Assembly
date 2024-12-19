@@ -43,7 +43,7 @@ main:
 	la $a0, promptNewBase
 	syscall
 	
-	li $v0, 4
+	li $v0, 5
 	syscall
 	move $t2, $v0
 	
