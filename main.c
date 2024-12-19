@@ -18,7 +18,6 @@ int valid_number(char num[], int cur_sys, int size) {
         } else {
             digit = (num[i] - 'A') + 10;
         }
-        printf("%d \n", digit);
         if (digit >= cur_sys) {
             return 0;
         }
@@ -28,19 +27,30 @@ int valid_number(char num[], int cur_sys, int size) {
 }
 
 // OtherToDecimal: not finshed yet
-void OtherToDecimal(char num[], int new_sys, int size) {
+int OtherToDecimal(char num[], int cur_sys, int size) {
     int res = 0;
-    for (int i = size - 1; i > -1; i--) {
+    for (int i = 0; i < size; i++) {
         int digit;
-        if (num[i] > '9') {
-            digit = num[i] - '0';
+        if (num[size - i - 1] >= '0' && num[size - i - 1] <= '9') {
+            digit = num[size - i - 1] - '0';
         } else {
-            digit = (num[i] - 'A') + 10;
+            digit = (num[size - i - 1] - 'A') + 10;
         }
-        res = res * new_sys + digit; // Corrected to use new_sys
+        int x = pow(cur_sys, i);
+        printf("digit = %d \n", digit);
+        res = res + pow(cur_sys, i) * digit; 
     }
     printf("result = %d", res);
+    return res;
 }
+
+
+int DecimalToOther(int num, int new_sys, int size) {
+
+    
+    return res;
+}
+
 
 int main() {
     char num[maxLength];
@@ -63,7 +73,7 @@ int main() {
     if (isValid) {
         printf("%s is valid number \n", num);
         if (cur_sys != 10) {
-            OtherToDecimal(num, new_sys, size);
+            OtherToDecimal(num, cur_sys, size);
         }
     } else {
         printf("%s is not valid number", num);
