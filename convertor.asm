@@ -48,13 +48,13 @@ ConvertFromDecimalMenu:
 	move $a0, $t0
 	move $a1, $t1
 	jal DecimalToOther
-
+	move $t2,$v0
 	
 	li $v0, 4
 	la $a0, resultMessage
 	syscall
 
-	move $a0, $v0
+	move $a0, $t2
 	li $v0, 1
 	syscall
 	j Exit
