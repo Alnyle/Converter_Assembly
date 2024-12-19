@@ -40,15 +40,48 @@ int OtherToDecimal(char num[], int cur_sys, int size) {
         printf("digit = %d \n", digit);
         res = res + pow(cur_sys, i) * digit; 
     }
-    printf("result = %d", res);
+    // printf("result = %d", res);
     return res;
 }
 
+// convert from string to int
+void strToInt(char n_str[], int size) {
+    for (int i = 0; i < size; i++) {
+        printf("%c", n_str[i]);
+    }
+}
 
-int DecimalToOther(int num, int new_sys, int size) {
+// from decimal to other systems
+void DecimalToOther(int num, int new_sys, int n_reminders) {
 
-    
-    return res;
+    char n_str[n_reminders];
+
+    int res = 0;
+    int i = n_reminders - 1;
+      while (num != 0) {
+        int remainder = num % new_sys;  // Ensure `remainder` is an integer
+        if (remainder < 10) {
+            n_str[i] = remainder + '0';  // For digits 0-9
+        } else {
+            n_str[i] = remainder - 10 + 'A';  // For letters A-Z
+        }
+        // printf("%c", n_str[i]);
+        i--;
+        num /= new_sys;
+    }
+
+    strToInt(n_str, n_reminders);
+    // OtherToDecimal(n_str, n_reminders, n_reminders)
+}
+
+// count number of reminder for number "n"
+int countreminders(int num, int new_sys) {
+    int n_reminders = 0;
+    while(num != 0) {
+        num /= new_sys;
+        n_reminders++;
+    }
+    return n_reminders;
 }
 
 
@@ -70,11 +103,13 @@ int main() {
     int size = strlen(num); // Now strlen(num) works correctly
 
     int isValid = valid_number(num, cur_sys, size);
+    int final = 0;
     if (isValid) {
         printf("%s is valid number \n", num);
-        if (cur_sys != 10) {
-            OtherToDecimal(num, cur_sys, size);
-        }
+        final = OtherToDecimal(num, cur_sys, size);
+        int n_reminders = countreminders(final, new_sys);
+        DecimalToOther(final, new_sys, n_reminders);
+
     } else {
         printf("%s is not valid number", num);
     }
