@@ -34,10 +34,10 @@ main:
 	
 	li $v0, 8
 	la $a0, buffer
-	li $a1, 1000
+	li $a1, 1000 # max length of the buffer
 	syscall
-	move $t1, $t0 # array base address
-	move $s0, $a1
+	move $t1, $a0 # array base address
+		      
 	
 	
 	# part 3
@@ -50,5 +50,22 @@ main:
 	li $v0, 5
 	syscall
 	move $t2, $v0
+	
+countSize:
+	li $t4, 0 # count for the size of the array
+	lb $t5, 0($t1)  # first element in the array
+loopStart:
+	beq $t5, $zero, loopEnd
+	addi $t4, $t4, 1
+	addi $t5, $t5, 1
+	lb $t5, 0($t1)
+	j loopStart
+loopEnd:
+	
+	li $v0, 8
+	la $a0, buffer
+	syscall
+		
+
 	
 	

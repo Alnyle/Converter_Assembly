@@ -100,7 +100,7 @@ int main() {
     printf("Enter the new system: ");
     scanf("%d", &new_sys);
 
-    int size = strlen(num); // Now strlen(num) works correctly
+    int size = strlen(num); 
 
     int isValid = valid_number(num, cur_sys, size);
     int final = 0;
