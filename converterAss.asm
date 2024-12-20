@@ -5,6 +5,7 @@
 	promptNewBase: .asciiz "Enter the new system: "
 	resultMessage: .asciiz "The result is:\n"
 	errorMessage: .asciiz "Error: Invalid input for the specified base.\n"
+	buffer: .space 1000 
 	
 .text
 
@@ -31,9 +32,12 @@ main:
 	
 	# enter user input
 	
-	li $v0, 5
+	li $v0, 8
+	la $a0, buffer
+	li $a1, 1000
 	syscall
-	move $t1, $t0
+	move $t1, $t0 # array base address
+	move $s0, $a1
 	
 	
 	# part 3
