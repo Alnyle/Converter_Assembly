@@ -52,20 +52,17 @@ main:
 	move $t2, $v0
 	
 countSize:
-	li $t4, 0 # count for the size of the array
-	lb $t5, 0($t1)  # first element in the array
+	li $t3, 0 # count for the size of the array
+	lb $t4, 0($t1)  # first element in the array
 loopStart:
-	beq $t5, $zero, loopEnd
-	addi $t4, $t4, 1
-	addi $t5, $t5, 1
-	lb $t5, 0($t1)
+	beq $t4, $zero, loopEnd
+	addi $t3, $t3, 1
+	addi $t1, $t1, 1
+	lb $t4, 0($t1)
 	j loopStart
 loopEnd:
 	
-	li $v0, 8
+	li $v0, 4
 	la $a0, buffer
 	syscall
-		
-
-	
 	
