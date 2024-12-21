@@ -21,7 +21,7 @@ main:
 	# enter input
 	li $v0, 5
 	syscall
-	move $t0, $v0
+	move $s0, $v0
 	
 	# part 2
 	
@@ -36,7 +36,7 @@ main:
 	la $a0, buffer
 	li $a1, 1000 # max length of the buffer
 	syscall
-	move $t1, $a0 # array base address
+	move $s1, $a0 # array base address
 		      
 	
 	
@@ -49,20 +49,74 @@ main:
 	
 	li $v0, 5
 	syscall
-	move $t2, $v0
+	move $s2, $v0
 	
 countSize:
-	li $t3, 0 # count for the size of the array
-	lb $t4, 0($t1)  # first element in the array
+	li $s3, 0 # count for the size of the array
+	lb $t4, 0($s1)  # first element in the array
 loopStart:
 	beq $t4, $zero, loopEnd
-	addi $t3, $t3, 1
-	addi $t1, $t1, 1
-	lb $t4, 0($t1)
+	addi $s3, $s3, 1
+	addi $s1, $s1, 1
+	lb $t4, 0($s1)
 	j loopStart
 loopEnd:
 	
-	li $v0, 4
+	li $v0, 1
+	addi $s3, $s3, -1
+	move $a0, $s3
+	# syscall
+	
+	move $s3, $a0
+	
+	# array base address
 	la $a0, buffer
+	# current system
+	add $a2, $s0, $zero
+	jal validate_number
+	
+	move $s4, $v0
+	li $v0, 1
+	move $a0, $s4
 	syscall
 	
+	j exist
+
+# validate number function
+validate_number:
+	
+	
+	
+	# for validation 
+	# zero : not validate number
+	# one: valide number
+	lb $t0, 0($a0) # first element
+	li $t7, 1
+	VLoopStart:
+		beq $t0, $zero, VLoopEnd
+		li $t2, 0     # digitt value as integer
+		sge $t3, $t0, '0'  # num[i] >= '0'
+		sle $t4, $t0, '9'  # num[i] <= '9'
+		beq $t3, $zero, VElse # else condition
+		beq $t4, $zero,VElse 
+		sub $t2, $t0, '0'   # if condition case: char - '0'
+	
+		j Vcheckdigit
+		VElse:  # else condition case: (char - 'A') + 10
+			sub $t2, $t0, 'A'   # if condition case
+			addi $t2, $t2, 10
+		Vcheckdigit: # if digit >= current system
+			sge $t3, $t2,$a2
+			beq $t3, $t7, notValidate
+			# increase count and get next element
+			addi $a0, $a0, 1
+			lb $t0, 0($a0) # first element
+			j VLoopStart
+			notValidate:
+				li $v0, 0
+				jr $ra
+	VLoopEnd:
+		li $v0, 1
+		jr $ra
+
+exist:

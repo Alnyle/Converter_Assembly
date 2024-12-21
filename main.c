@@ -8,7 +8,7 @@ char indexes[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C
 int size2 = sizeof(indexes) / sizeof(indexes[0]);
 
 // OtherToDecimal
-int valid_number(char num[], int cur_sys, int size) {
+int validate_number(char num[], int cur_sys, int size) {
 
 
     for (int i = 0; i < size; i++) {
@@ -102,7 +102,7 @@ int main() {
 
     int size = strlen(num); 
 
-    int isValid = valid_number(num, cur_sys, size);
+    int isValid = validate_number(num, cur_sys, size);
     int final = 0;
     if (isValid) {
         printf("%s is valid number \n", num);

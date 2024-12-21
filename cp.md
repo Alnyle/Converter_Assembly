@@ -31,3 +31,10 @@ loopEnd:
 	li $a0, 12
 	syscall
 	
+--------------------------------------
+    #print string 
+    li $v0, 4
+	la $a0, buffer
+	syscall
+-------------------------------
+print int
