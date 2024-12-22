@@ -75,10 +75,31 @@ loopEnd:
 	add $a2, $s0, $zero
 	jal validate_number
 	
+	
+	# print validation result: zero: not validate & 1: validate number
 	move $s4, $v0
 	li $v0, 1
 	move $a0, $s4
 	syscall
+	
+	move $s4, $a0
+	
+	li $s5, 0
+	la $a0, buffer      # base address
+	add $a2, $s0, $zero # current system
+	beq $s4, $zero, notValideMessage
+	jal OtherToDecimal
+	
+	# print number after converted to integer
+	move $a0, $v1
+	#move $s4, $v0
+	li $v0, 1
+	syscall
+	
+	
+	j exist
+	
+	notValideMessage:
 	
 	j exist
 
@@ -118,5 +139,58 @@ validate_number:
 	VLoopEnd:
 		li $v0, 1
 		jr $ra
+		
 
+OtherToDecimal:
+	
+	# a0, a2, s3
+	add $a0, $a0, $s3
+	lb $t0, 0($a0)
+	li $v1, 0 # result
+	
+	li $t6, 0
+	OLoopStart:
+	beq $t0, $zero, OLoopEnd
+	li $t1, 0     # digitt value as integer
+	sge $t2, $t0, '0'  # num[i] >= '0'
+	sle $t3, $t0, '9'  # num[i] <= '9'
+	beq $t2, $zero, OElse # else condition
+	beq $t3, $zero,OElse 
+	sub $t1, $t0, '0'   # if condition case: char - '0'
+	j ToDecimal
+	OElse:  # else condition case: (char - 'A') + 10
+		sub $t1, $t0, 'A'   # if condition case
+		addi $t1, $t1, 10
+	ToDecimal: # convert number to decimal
+		add $a3, $t6, $zero # b: current index
+		jal pow             # pow(a, b)
+		move $t4, $v0      # result
+		mul  $t4, $t4, $t1  
+		add $v1, $v1, $t1
+		
+		addi $a0, $a0, -1
+		# add $t5, $s3, -1
+		bge $t6, $s3, OLoopEnd
+		lb $t0, 0($a0)
+		addi $t6, $t6, 1
+		j OLoopStart
+	OLoopEnd:
+		jr $ra
+		
+	
+	
+# s3: a, a3: b
+pow:
+	li $t0, 0
+	li $t1, 1 
+	pwLoopStart: 
+		beq $t0, $a3, pwoopEnd
+		mul $t1, $t1, $s3
+		addi $t0, $t0, 1
+		j pwLoopStart
+pwoopEnd:
+	move $v0, $t1
+	jr $ra
+	
+	
 exist:
