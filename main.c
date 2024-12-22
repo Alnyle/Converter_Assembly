@@ -62,8 +62,6 @@ void DecimalToOther(int num, int new_sys, int n_reminders) {
         int remainder = num % new_sys;  // Ensure `remainder` is an integer
         if (remainder < 10) {
             n_str[i] = remainder + '0';  // For digits 0-9
-            printf("%c", n_str[i]);
-
         } else {
             n_str[i] = remainder - 10 + 'A';  // For letters A-Z
         }
@@ -72,7 +70,7 @@ void DecimalToOther(int num, int new_sys, int n_reminders) {
         num /= new_sys;
     }
 
-    // strToInt(n_str, n_reminders);
+    strToInt(n_str, n_reminders);
     // OtherToDecimal(n_str, n_reminders, n_reminders)
 }
 

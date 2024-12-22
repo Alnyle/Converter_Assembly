@@ -304,9 +304,10 @@ printResult: #sp: act as array, s6: number of reminders as array size
 
 	add $t0, $s6, $zero # size
 	li $t1, 0 # index in stack 
+	li $t2, -1
 	printLoopStart:
-	beq $t0, $zero, printLoopEnd
-	add $t3, $sp, $t1
+	beq $t0, $t2, printLoopEnd
+	add $t3, $sp, $t0
 	lb $t4, 0($t3)
 	#addi $sp, $sp, -1
 	
