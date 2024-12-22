@@ -108,6 +108,7 @@ int main() {
         printf("%s is valid number \n", num);
         final = OtherToDecimal(num, cur_sys, size);
         int n_reminders = countreminders(final, new_sys);
+        printf("%d is reminders is number \n", n_reminders);
         DecimalToOther(final, new_sys, n_reminders);
 
     } else {

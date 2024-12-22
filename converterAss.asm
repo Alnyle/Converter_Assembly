@@ -102,6 +102,27 @@ loopEnd:
 	move $a0, $v1
 	syscall
 	
+	# number after converted to integer
+	move $s5, $a0
+	
+	
+	# count Reminders
+	add $a0, $s5,$zero
+	add $a2, $s2, $zero
+	jal countReminders
+	
+	# number of reminders
+	move $s6, $v0 # countreminders(num, new_sys)
+	
+	# print new Line
+	li $v0, 4
+	la $a0, newLine
+	syscall
+	
+	# print number of reminders
+	li $v0, 1
+	move $a0, $s6
+	syscall
 	
 	j exist
 	
@@ -212,6 +233,24 @@ pwoopEnd:
 
 	move $v0, $t1
 	jr $ra
+
+
+countReminders: # a0: number, $a2: new system
 	
+	li $t0, 0  	# counter count number of reminders
+	CLoopStart:
+		beq $a0,$zero, CLoopEnd
+		div $a0, $a2
+		mflo $a0
+		addi $t0, $t0, 1
+		j CLoopStart
+	CLoopEnd:
+	move $v0, $t0
+	jr $ra
+	
+	
+	
+
+
 	
 exist:
