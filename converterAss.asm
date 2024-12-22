@@ -102,7 +102,7 @@ loopEnd:
 	move $a0, $v1
 	syscall
 	
-	# number after converted to integer
+	# ------------> number after converted to integer <---------------------
 	move $s5, $a0
 	
 	
@@ -123,6 +123,25 @@ loopEnd:
 	li $v0, 1
 	move $a0, $s6
 	syscall
+	
+	# number of reminder
+	move $s6, $a0
+	
+	# Decimal To other systems function
+	
+	add $a0, $s5, $zero
+	add $a2, $s2, $zero
+	jal DecimalToOther
+	
+	
+	# print new Line
+	li $v0, 4
+	la $a0, newLine
+	syscall
+	
+	
+	jal printResult
+	
 	
 	j exist
 	
@@ -198,6 +217,7 @@ OtherToDecimal:
 		sw $ra, 0($sp)
 		sw $t0, 4($sp)
 		sw $t1, 8($sp)
+		
 		jal pow             # pow(a, b)
 		lw $ra, 0($sp) 
 		lw $t0, 4($sp)
@@ -205,11 +225,11 @@ OtherToDecimal:
 		add $sp, $sp, 8
 		addi $sp, $sp, 12
 		
-		move $t4, $v0      # result
-		mul  $t4, $t4, $t1  
-		add $v1, $v1, $t4
+		move $t4, $v0       # result
+		mul  $t4, $t4, $t1  #  a * a
+		add $v1, $v1, $t4   # a += a * a
 		
-		addi $t6, $t6, 1
+		addi $t6, $t6, 1   
 
 		addi $a0, $a0, -1
 		# add $t5, $s3, -1
@@ -250,7 +270,58 @@ countReminders: # a0: number, $a2: new system
 	
 	
 	
+DecimalToOther: # a0; integer number, a2: new system, s6: number of reminders
 
+	sub $sp, $sp, $s6
+	add $t0, $s6, $zero
+	li $t1, 0 # index in stack 
+	DLoopStart:
+		beq $t0, $zero, DLoopEnd
+		div $a0, $a2 
+		mflo $a0 			# num = num / new_sys
+		mfhi $t3 			# reminder = num % new_sys
+		
+		bgt $t3, 9, DGreaterthan9
+		addi $t3, $t3, '0'   		# reminder + 'A'
+		j addElement
+		
+		DGreaterthan9: 			# reminder - 10 + 'A'
+		addi $t3, $t3, -10
+		addi $t3, $t3, 'A'
+		
+		addElement: 
+		add $t4, $sp, $t1 		# current index in stack
+		sb $t3, 0($t4)
+		addi $t1, $t1, 1
+		addi $t0, $t0, -1
+		j DLoopStart
+	DLoopEnd:
+	li $v0, 0
+	jr $ra
+	
+	
+printResult: #sp: act as array, s6: number of reminders as array size
 
+	add $t0, $s6, $zero # size
+	li $t1, 0 # index in stack 
+	printLoopStart:
+	beq $t0, $zero, printLoopEnd
+	add $t3, $sp, $t1
+	lb $t4, 0($t3)
+	#addi $sp, $sp, -1
+	
+	# print the character or the digit of the number
+	li $v0, 11
+	move $a0, $t4
+	syscall
+	
+	addi $t1, $t1, 1 
+	addi $t0, $t0,-1 
+	j printLoopStart
+	printLoopEnd:
+	j exist
+	
+	
+	
 	
 exist:

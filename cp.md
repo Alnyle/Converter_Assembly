@@ -38,3 +38,62 @@ loopEnd:
 	syscall
 -------------------------------
 print int
+
+
+--------------
+
+DecimalToOther: # a0; integer number, a2: new system, s6: number of reminders
+
+	sub $sp, $sp, $s6
+	add $t0, $s6, $zero
+	li $t1, 0 # index in stack 
+	DLoopStart:
+		beq $t0, $zero, DLoopEnd
+		div $a0, $a2 
+		mflo $a0 			# num = num / new_sys
+		mfhi $t3 			# reminder = num % new_sys
+		
+		bgt $t3, 9, DGreaterthan9
+		addi $t3, $t3, '0'   		# reminder + 'A'
+		j addElement
+		
+		DGreaterthan9: 			# reminder - 10 + 'A'
+		addi $t3, $t3, -10
+		addi $t3, $t3, 'A'
+		
+		addElement: 
+		add $t4, $sp, $t1 		# current index in stack
+		sb $t3, 0($t4)
+		addi $t1, $t1, 1
+		addi $t0, $t0, -1
+		j DLoopStart
+	DLoopEnd:
+	li $v0, 0
+	jr $ra
+	
+	
+printResult: #sp: act as array, s6: number of reminders as array size
+
+	add $t0, $s6, $zero # size
+	li $t1, 0 # index in stack 
+	printLoopStart:
+	beq $t0, $zero, printLoopEnd
+	add $t3, $sp, $t1
+	lb $t4, 0($t3)
+	#addi $sp, $sp, -1
+	
+	# print the character or the digit of the number
+	li $v0, 11
+	move $a0, $t4
+	syscall
+	
+	addi $t1, $t1, 1 
+	addi $t0, $t0,-1 
+	j printLoopStart
+	printLoopEnd:
+	j exist
+	
+	
+	
+	
+exist:

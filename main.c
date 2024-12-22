@@ -44,7 +44,7 @@ int OtherToDecimal(char num[], int cur_sys, int size) {
     return res;
 }
 
-convert from string to int
+// convert from string to int
 void strToInt(char n_str[], int size) {
     for (int i = 0; i < size; i++) {
         printf("%c", n_str[i]);
@@ -72,7 +72,7 @@ void DecimalToOther(int num, int new_sys, int n_reminders) {
         num /= new_sys;
     }
 
-    strToInt(n_str, n_reminders);
+    // strToInt(n_str, n_reminders);
     // OtherToDecimal(n_str, n_reminders, n_reminders)
 }
 
