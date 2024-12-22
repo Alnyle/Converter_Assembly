@@ -5,6 +5,7 @@
 	promptNewBase: .asciiz "Enter the new system: "
 	resultMessage: .asciiz "The result is:\n"
 	errorMessage: .asciiz "Error: Invalid input for the specified base.\n"
+	newLine: .asciiz "\n"
 	buffer: .space 1000 
 	
 .text
@@ -90,8 +91,12 @@ loopEnd:
 	beq $s4, $zero, notValideMessage
 	jal OtherToDecimal
 	
+	# print new Line
+	li $v0, 4
+	la $a0, newLine
+	syscall
+	
 	# print number after converted to integer
-
 	#move $s4, $v0
 	li $v0, 1
 	move $a0, $v1
@@ -125,7 +130,7 @@ validate_number:
 	
 		j Vcheckdigit
 		VElse:  # else condition case: (char - 'A') + 10
-			sub $t2, $t0, 'A'   # if condition case
+			subi $t2, $t0, 'A'   # if condition case
 			addi $t2, $t2, 10
 		Vcheckdigit: # if digit >= current system
 			sge $t3, $t2,$a2
@@ -159,20 +164,25 @@ OtherToDecimal:
 	sle $t3, $t0, '9'  # num[i] <= '9'
 	beq $t2, $zero, OElse # else condition
 	beq $t3, $zero,OElse 
-	sub $t1, $t0, '0'   # if condition case: char - '0'
+	subi $t1, $t0, '0'   # if condition case: char - '0'
 	j ToDecimal
 	OElse:  # else condition case: (char - 'A') + 10
-		sub $t1, $t0, 'A'   # if condition case
+		subi $t1, $t0, 'A'   # if condition case
 		addi $t1, $t1, 10
 	ToDecimal: # convert number to decimal
 		add $a3, $t6, $zero # b: current index
 		
 		# save return addreess
-		addi $sp, $sp -4
+		addi $sp, $sp, -12
 		sw $ra, 0($sp)
+		sw $t0, 4($sp)
+		sw $t1, 8($sp)
 		jal pow             # pow(a, b)
 		lw $ra, 0($sp) 
-		addi $sp, $sp, 4
+		lw $t0, 4($sp)
+		lw $t1, 8($sp)
+		add $sp, $sp, 8
+		addi $sp, $sp, 12
 		
 		move $t4, $v0      # result
 		mul  $t4, $t4, $t1  
@@ -199,6 +209,7 @@ pow:
 		addi $t0, $t0, 1
 		j pwLoopStart
 pwoopEnd:
+
 	move $v0, $t1
 	jr $ra
 	
