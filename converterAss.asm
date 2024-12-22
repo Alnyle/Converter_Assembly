@@ -91,9 +91,10 @@ loopEnd:
 	jal OtherToDecimal
 	
 	# print number after converted to integer
-	move $a0, $v1
+
 	#move $s4, $v0
 	li $v0, 1
+	move $a0, $v1
 	syscall
 	
 	
@@ -145,12 +146,14 @@ OtherToDecimal:
 	
 	# a0, a2, s3
 	add $a0, $a0, $s3
+	addi $a0, $a0, -1
 	lb $t0, 0($a0)
 	li $v1, 0 # result
 	
 	li $t6, 0
 	OLoopStart:
-	beq $t0, $zero, OLoopEnd
+	bge $t6, $s3, OLoopEnd
+	# beq $t0, $zero, OLoopEnd
 	li $t1, 0     # digitt value as integer
 	sge $t2, $t0, '0'  # num[i] >= '0'
 	sle $t3, $t0, '9'  # num[i] <= '9'
@@ -163,16 +166,23 @@ OtherToDecimal:
 		addi $t1, $t1, 10
 	ToDecimal: # convert number to decimal
 		add $a3, $t6, $zero # b: current index
+		
+		# save return addreess
+		addi $sp, $sp -4
+		sw $ra, 0($sp)
 		jal pow             # pow(a, b)
+		lw $ra, 0($sp) 
+		addi $sp, $sp, 4
+		
 		move $t4, $v0      # result
 		mul  $t4, $t4, $t1  
-		add $v1, $v1, $t1
+		add $v1, $v1, $t4
 		
+		addi $t6, $t6, 1
+
 		addi $a0, $a0, -1
 		# add $t5, $s3, -1
-		bge $t6, $s3, OLoopEnd
 		lb $t0, 0($a0)
-		addi $t6, $t6, 1
 		j OLoopStart
 	OLoopEnd:
 		jr $ra
@@ -185,7 +195,7 @@ pow:
 	li $t1, 1 
 	pwLoopStart: 
 		beq $t0, $a3, pwoopEnd
-		mul $t1, $t1, $s3
+		mul $t1, $t1, $s0
 		addi $t0, $t0, 1
 		j pwLoopStart
 pwoopEnd:
