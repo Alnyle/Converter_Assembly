@@ -4,7 +4,8 @@
 	promptNumber: .asciiz "Enter the number: "
 	promptNewBase: .asciiz "Enter the new system: "
 	resultMessage: .asciiz "The result is:\n"
-	errorMessage: .asciiz "Error: Invalid input for the specified base.\n"
+	errorMessage: .asciiz "does not belong to the "
+	conErrorMessage: .ascii " System"
 	newLine: .asciiz "\n"
 	buffer: .space 1000 
 	
@@ -65,10 +66,6 @@ loopEnd:
 	
 	li $v0, 1
 	addi $s3, $s3, -1
-	move $a0, $s3
-	# syscall
-	
-	move $s3, $a0
 	
 	# array base address
 	la $a0, buffer
@@ -79,11 +76,7 @@ loopEnd:
 	
 	# print validation result: zero: not validate & 1: validate number
 	move $s4, $v0
-	li $v0, 1
-	move $a0, $s4
-	syscall
-	
-	move $s4, $a0
+
 	
 	li $s5, 0
 	la $a0, buffer      # base address
@@ -91,19 +84,9 @@ loopEnd:
 	beq $s4, $zero, notValideMessage
 	jal OtherToDecimal
 	
-	# print new Line
-	li $v0, 4
-	la $a0, newLine
-	syscall
-	
-	# print number after converted to integer
-	#move $s4, $v0
-	li $v0, 1
-	move $a0, $v1
-	syscall
 	
 	# ------------> number after converted to integer <---------------------
-	move $s5, $a0
+	move $s5, $v1
 	
 	
 	# count Reminders
@@ -114,18 +97,6 @@ loopEnd:
 	# number of reminders
 	move $s6, $v0 # countreminders(num, new_sys)
 	
-	# print new Line
-	li $v0, 4
-	la $a0, newLine
-	syscall
-	
-	# print number of reminders
-	li $v0, 1
-	move $a0, $s6
-	syscall
-	
-	# number of reminder
-	move $s6, $a0
 	
 	# Decimal To other systems function
 	
@@ -146,6 +117,21 @@ loopEnd:
 	j exist
 	
 	notValideMessage:
+	
+	
+	li $v0, 4
+	la $a0, buffer
+	syscall
+	
+	
+	li $v0, 4
+	la $a0, errorMessage
+	syscall 
+	
+	
+	li $v0, 1
+	move $a0, $s0
+	syscall
 	
 	j exist
 
@@ -257,26 +243,26 @@ pwoopEnd:
 
 countReminders: # a0: number, $a2: new system
 	
-	li $t0, 0  	# counter count number of reminders
+	li $t0, 0  			   # counter count number of reminders
 	CLoopStart:
-		beq $a0,$zero, CLoopEnd
-		div $a0, $a2
-		mflo $a0
-		addi $t0, $t0, 1
-		j CLoopStart
+		beq $a0,$zero, CLoopEnd    
+		div $a0, $a2              # num/new_sys
+		mflo $a0                  # quotient
+		addi $t0, $t0, 1          # reminder
+		j CLoopStart             
 	CLoopEnd:
-	move $v0, $t0
-	jr $ra
+	move $v0, $t0                     # result number of reminder
+	jr $ra                            # return result
 	
 	
 	
 DecimalToOther: # a0; integer number, a2: new system, s6: number of reminders
 
 	sub $sp, $sp, $s6
-	add $t0, $s6, $zero
+	add $t0, $s6, $zero                    # the size of the number as string
 	li $t1, 0 # index in stack 
 	DLoopStart:
-		beq $t0, $zero, DLoopEnd
+		beq $t0, $zero, DLoopEnd        # we finished converting number to string
 		div $a0, $a2 
 		mflo $a0 			# num = num / new_sys
 		mfhi $t3 			# reminder = num % new_sys
@@ -290,10 +276,10 @@ DecimalToOther: # a0; integer number, a2: new system, s6: number of reminders
 		addi $t3, $t3, 'A'
 		
 		addElement: 
-		add $t4, $sp, $t1 		# current index in stack
-		sb $t3, 0($t4)
-		addi $t1, $t1, 1
-		addi $t0, $t0, -1
+		add $t4, $sp, $t1 		# base address + i
+		sb $t3, 0($t4)                  # gets the value inside that address
+		addi $t1, $t1, 1                # i++
+		addi $t0, $t0, -1               # j-- : it's the size of the number as string
 		j DLoopStart
 	DLoopEnd:
 	li $v0, 0
@@ -302,27 +288,21 @@ DecimalToOther: # a0; integer number, a2: new system, s6: number of reminders
 	
 printResult: #sp: act as array, s6: number of reminders as array size
 
-	add $t0, $s6, $zero # size
-	li $t1, 0 # index in stack 
-	li $t2, -1
+	add $t0, $s6, $zero 	    # use it as index => i
+	li $t1, -1        	    # use it as end point
 	printLoopStart:
-	beq $t0, $t2, printLoopEnd
-	add $t3, $sp, $t0
-	lb $t4, 0($t3)
-	#addi $sp, $sp, -1
+	beq $t0, $t1, printLoopEnd  # i == -1 => end for loop
+	add $t2, $sp, $t0           # add current index to base address => base address + i
+	lb $t3, 0($t2)		    # gets the value	
 	
 	# print the character or the digit of the number
 	li $v0, 11
-	move $a0, $t4
+	move $a0, $t3
 	syscall
 	
-	addi $t1, $t1, 1 
-	addi $t0, $t0,-1 
+	addi $t0, $t0,-1 	  # i--
 	j printLoopStart
 	printLoopEnd:
 	j exist
-	
-	
-	
 	
 exist:
