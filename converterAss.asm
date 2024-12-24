@@ -3,8 +3,8 @@
 	promptBase: .asciiz "Enter the current system: "
 	promptNumber: .asciiz "Enter the number: "
 	promptNewBase: .asciiz "Enter the new system: "
-	resultMessage: .asciiz "The result is:\n"
 	errorMessage: .asciiz "does not belong to the "
+	resultMessage : .asciiz "The number in the new system: "
 	conErrorMessage: .ascii " System"
 	newLine: .asciiz "\n"
 	buffer: .space 1000 
@@ -104,12 +104,14 @@ loopEnd:
 	add $a2, $s2, $zero
 	jal DecimalToOther
 	
-	
 	# print new Line
 	li $v0, 4
 	la $a0, newLine
 	syscall
 	
+	la $v0, 4
+	la $a0, resultMessage
+	syscall
 	
 	jal printResult
 	
@@ -131,6 +133,10 @@ loopEnd:
 	
 	li $v0, 1
 	move $a0, $s0
+	syscall
+	
+	la $v0, 4
+	la $a0, conErrorMessage
 	syscall
 	
 	j exist
